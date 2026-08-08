@@ -1,0 +1,244 @@
+
+DAX FORMULAS USING SUPERSTORE DATASET
+Table Name Assumed: Superstore
+
+-----------------------------
+AGGREGATION FUNCTIONS
+-----------------------------
+
+Total Sales =
+SUM(Superstore[Sales])
+
+Average Profit =
+AVERAGE(Superstore[Profit])
+
+Maximum Sales =
+MAX(Superstore[Sales])
+
+Minimum Profit =
+MIN(Superstore[Profit])
+
+Total Orders =
+COUNT(Superstore[Order ID])
+
+Profit Margin =
+DIVIDE(SUM(Superstore[Profit]), SUM(Superstore[Sales]),0)
+
+
+-----------------------------
+ITERATOR FUNCTIONS
+-----------------------------
+
+Total Calculated Sales =
+SUMX(Superstore, Superstore[Quantity] * Superstore[Sales])
+
+Average Sales Per Row =
+AVERAGEX(Superstore, Superstore[Sales])
+
+Max Profit Row =
+MAXX(Superstore, Superstore[Profit])
+
+Min Discount Row =
+MINX(Superstore, Superstore[Discount])
+
+Count Orders X =
+COUNTX(Superstore, Superstore[Order ID])
+
+
+-----------------------------
+DATE & TIME FUNCTIONS
+-----------------------------
+
+DateTable =
+CALENDAR(MIN(Superstore[Order Date]), MAX(Superstore[Order Date]))
+
+Custom Date =
+DATE(2024,1,1)
+
+Shipping Days =
+DATEDIFF(Superstore[Order Date], Superstore[Ship Date], DAY)
+
+Converted Order Date =
+DATEVALUE(Superstore[Order Date])
+
+Month End Date =
+EOMONTH(Superstore[Order Date],0)
+
+Working Days =
+NETWORKDAYS(Superstore[Order Date], Superstore[Ship Date])
+
+Order Weekday =
+WEEKDAY(Superstore[Order Date])
+
+Order Week Number =
+WEEKNUM(Superstore[Order Date])
+
+
+-----------------------------
+LOGICAL FUNCTIONS
+-----------------------------
+
+Profit Status =
+IF(Superstore[Profit] > 0,"Profit", "Loss")
+
+High Sales Profit =
+IF(AND(Superstore[Sales] > 500, Superstore[Profit] > 100),"Good","Average")
+
+Sales Condition =
+IF(OR(Superstore[Sales] > 500, Superstore[Profit] > 100),"Qualified","No")
+
+Not Discounted =
+NOT(Superstore[Discount] > 0)
+
+Region Category =
+SWITCH(
+    Superstore[Region],
+    "East","Zone 1",
+    "West","Zone 2",
+    "Central","Zone 3",
+    "South","Zone 4"
+)
+
+Safe Profit Margin =
+IFERROR(DIVIDE(SUM(Superstore[Profit]),SUM(Superstore[Sales])),0)
+
+
+-----------------------------
+TEXT FUNCTIONS
+-----------------------------
+
+Customer Location =
+CONCATENATE(Superstore[Customer Name], Superstore[City])
+
+Customer Key =
+COMBINEVALUES("-",Superstore[Customer ID],Superstore[Customer Name])
+
+Find Office Word =
+FIND("Office",Superstore[Category],1,0)
+
+Formatted Sales =
+FORMAT(Superstore[Sales],"Currency")
+
+Replace Product Name =
+REPLACE(Superstore[Product Name],1,5,"Item")
+
+Clean Product Name =
+TRIM(Superstore[Product Name])
+
+Upper Product Name =
+UPPER(Superstore[Product Name])
+
+Lower Product Name =
+LOWER(Superstore[Product Name])
+
+Replace Desk Word =
+SUBSTITUTE(Superstore[Product Name],"Desk","Table")
+
+
+-----------------------------
+FILTER FUNCTIONS
+-----------------------------
+
+Total Sales Overall =
+CALCULATE(SUM(Superstore[Sales]), ALL(Superstore))
+
+West Region Sales =
+CALCULATE(
+SUM(Superstore[Sales]),
+Superstore[Region] = "West"
+)
+
+High Profit Sales =
+CALCULATE(
+SUM(Superstore[Sales]),
+FILTER(Superstore, Superstore[Profit] > 100)
+)
+
+Sales By Category =
+CALCULATE(
+SUM(Superstore[Sales]),
+ALLEXCEPT(Superstore, Superstore[Category])
+)
+
+Total Sales No Filters =
+CALCULATE(SUM(Superstore[Sales]), REMOVEFILTERS())
+
+Selected Region =
+SELECTEDVALUE(Superstore[Region],"No Selection")
+
+
+-----------------------------
+TABLE FUNCTIONS
+-----------------------------
+
+Sales Table With Ratio =
+ADDCOLUMNS(
+Superstore,
+"Profit Ratio", Superstore[Profit] / Superstore[Sales]
+)
+
+Region Category Table =
+CROSSJOIN(
+VALUES(Superstore[Region]),
+VALUES(Superstore[Category])
+)
+
+Category Sales Summary =
+SUMMARIZE(
+Superstore,
+Superstore[Category],
+"Total Sales", SUM(Superstore[Sales])
+)
+
+Unique Categories =
+VALUES(Superstore[Category])
+
+Union Example =
+UNION(Table1, Table2)
+
+
+-----------------------------
+TIME INTELLIGENCE FUNCTIONS
+-----------------------------
+
+Previous Month Sales =
+CALCULATE(
+SUM(Superstore[Sales]),
+DATEADD(DateTable[Date], -1, MONTH)
+)
+
+Sales Between Dates =
+CALCULATE(
+SUM(Superstore[Sales]),
+DATESBETWEEN(DateTable[Date], DATE(2016,1,1), DATE(2016,12,31))
+)
+
+Sales Last Year =
+CALCULATE(
+SUM(Superstore[Sales]),
+SAMEPERIODLASTYEAR(DateTable[Date])
+)
+
+YTD Sales =
+TOTALYTD(
+SUM(Superstore[Sales]),
+DateTable[Date]
+)
+
+
+-----------------------------
+INFORMATION FUNCTIONS
+-----------------------------
+
+Single Category Check =
+HASONEVALUE(Superstore[Category])
+
+Check Blank Profit =
+ISBLANK(Superstore[Profit])
+
+Check Profit Error =
+ISERROR(DIVIDE(SUM(Superstore[Profit]),SUM(Superstore[Sales])))
+
+Category Filter Applied =
+ISFILTERED(Superstore[Category])
+
